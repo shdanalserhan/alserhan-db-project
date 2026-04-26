@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reward Vouchers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f4f7; color: #333; margin: 0; padding: 0; }
+        .navbar { background-color: #9e1b32; padding: 15px 25px; display: flex; align-items: center; }
+        .nav-logo-img { width: 50px; height: auto; }
+        .container {
+            max-width: 1100px; margin: 40px auto; padding: 25px;
+            background-color: #ffe7e7; border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+        }
+        h1 { color: #2c3e50; margin-bottom: 10px; }
+        h2 { color: #2c3e50; margin-top: 35px; padding-bottom: 8px;
+             border-bottom: 2px solid #9e1b32; }
+        .hint { color: #555; font-size: 0.95rem; margin-bottom: 20px; }
+        .message {
+            background: #d4edda; color: #155724;
+            padding: 12px; border-radius: 6px; margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .error {
+            background: #f8d7da; color: #721c24;
+            padding: 12px; border-radius: 6px; margin-bottom: 15px;
+        }
+        table {
+            width: 100%; border-collapse: collapse;
+            background-color: white; margin-top: 10px;
+            border-radius: 8px; overflow: hidden;
+        }
+        th { background-color: #9e1b32; color: white; padding: 10px; text-align: left; font-size: 0.95rem; }
+        td { padding: 10px; border-bottom: 1px solid #ddd; font-size: 0.95rem; }
+        tbody tr:hover { background-color: #f7eeee; }
+        .empty {
+            background: #fff3cd; color: #856404;
+            padding: 12px; border-radius: 6px; margin-top: 10px;
+        }
+        .btn {
+            padding: 8px 14px; color: white; background-color: #9e1b32;
+            border: none; border-radius: 6px; font-weight: 600;
+            cursor: pointer; font-size: 0.9rem;
+        }
+        .btn:hover { background-color: #7c1427; }
+        .btn-redeem { background-color: #28a745; }
+        .btn-redeem:hover { background-color: #1e7e34; }
+        .back-button {
+            display: inline-block; margin-top: 25px; padding: 12px 20px;
+            background-color: #6c757d; color: white;
+            border-radius: 8px; font-weight: 600;
+            text-decoration: none; font-size: 1rem;
+        }
+        .back-button:hover { background-color: #545b62; }
+        .redeem-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .redeem-form select, .redeem-form input {
+            padding: 6px 8px; border: 1px solid #ccc;
+            border-radius: 4px; font-size: 0.9rem;
+        }
+        .redeem-form input[type="text"] { width: 70px; }
+        .info-box {
+            background: #e7f3ff; padding: 15px; border-radius: 8px;
+            margin-bottom: 20px; border-left: 4px solid #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <img src="{{ url_for('static', filename='engineering-logo.png') }}"
+             alt="Engineering Logo" class="nav-logo-img">
+    </nav>
+
+    <div class="container">
+        <h1>Reward Voucher System</h1>
+
+        <div class="info-box">
+            <strong>How it works:</strong> Customers who spend more than $500
+            on tickets earn a free voucher they can redeem for any concert
+            of their choice. Issue vouchers below, then redeem them whenever
+            the customer is ready to claim their reward.
+        </div>
+
+        {% if message %}<div class="message">{{ message }}</div>{% endif %}
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+        <h2>Eligible Customers (spent over $500, no active voucher)</h2>
+        {% if eligible %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Customer Name</th>
+                    <th>Total Spent</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cid, cname, total in eligible %}
+                <tr>
+                    <td>{{ cid }}</td>
+                    <td>{{ cname }}</td>
+                    <td>${{ "%.2f"|format(total) }}</td>
+                    <td>
+                        <form method="POST" style="margin: 0;">
+                            <input type="hidden" name="action" value="issue">
+                            <input type="hidden" name="customer_id" value="{{ cid }}">
+                            <button type="submit" class="btn">Issue Voucher</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No customers are currently eligible.</div>
+        {% endif %}
+
+        <h2>Active Vouchers (Unredeemed)</h2>
+        {% if active_vouchers %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Voucher #</th>
+                    <th>Customer</th>
+                    <th>Amount at Issue</th>
+                    <th>Issued Date</th>
+                    <th>Redeem for...</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rid, cid, cname, amount, issued in active_vouchers %}
+                <tr>
+                    <td>#{{ rid }}</td>
+                    <td>{{ cname }}</td>
+                    <td>${{ "%.2f"|format(amount) }}</td>
+                    <td>{{ issued }}</td>
+                    <td>
+                        <form method="POST" class="redeem-form">
+                            <input type="hidden" name="action" value="redeem">
+                            <input type="hidden" name="reward_id" value="{{ rid }}">
+                            <select name="concert_id" required>
+                                <option value="" disabled selected>Pick a concert...</option>
+                                {% for ccid, artist, venue, city, day in concerts %}
+                                <option value="{{ ccid }}">
+                                    {{ artist }} — {{ venue }}, {{ city }} ({{ day }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <input type="text" name="seat_number"
+                                   placeholder="Seat" required>
+                            <button type="submit" class="btn btn-redeem">Redeem</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No active vouchers right now.</div>
+        {% endif %}
+
+        <h2>Redeemed Vouchers (History)</h2>
+        {% if redeemed_vouchers %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Voucher #</th>
+                    <th>Customer</th>
+                    <th>Artist</th>
+                    <th>Venue</th>
+                    <th>City</th>
+                    <th>Concert Date</th>
+                    <th>Seat</th>
+                    <th>Redeemed On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rid, cname, aname, venue, city, cday, seat, redeemed in redeemed_vouchers %}
+                <tr>
+                    <td>#{{ rid }}</td>
+                    <td>{{ cname }}</td>
+                    <td>{{ aname }}</td>
+                    <td>{{ venue }}</td>
+                    <td>{{ city }}</td>
+                    <td>{{ cday }}</td>
+                    <td>{{ seat }}</td>
+                    <td>{{ redeemed }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No vouchers have been redeemed yet.</div>
+        {% endif %}
+
+        <a href="{{ url_for('db_website') }}" class="back-button">Back to Home</a>
+    </div>
+</body>
+</html>

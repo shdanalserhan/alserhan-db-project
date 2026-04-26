@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSCE 45203 Project</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f7;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #9e1b32;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-logo {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-logo-img {
+            width: 50px;
+            height: auto;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 25px;
+            background-color: #ffe7e7;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+            gap: 20px;
+        }
+
+        form h2 {
+            grid-column: 1 / -1;
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            grid-column: 1 / -1;
+        }
+
+        .input-group label {
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        button {
+            grid-column: 1 / -1;
+            padding: 12px 0;
+            background-color: #9e1b32;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #7c1427;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="{{ url_for('static', filename='engineering-logo.png') }}" 
+                 alt="Engineering Logo" 
+                 class="nav-logo-img">
+        </div>
+    </nav>
+
+<div class="container">
+    <h1>Welcome to the Music Concerts and Ticket Sales Database!</h1>
+
+    <form method="POST" action="/db_website" id="menu-form">
+        <h2>How would you like to use this tool? Please select from the options below and hit Submit.</h2>
+
+        <div class="input-group">
+            <label for="user_choice">Choose an option</label>
+            <select id="user_choice" name="user_choice" required>
+                <option value="" disabled selected>Select option</option>
+                <option value="1">Add an artist to the Artist table</option>
+                <option value="2">Add a concert to the Concert table</option>
+                <option value="3">Add a customer to the Customer table</option>
+                <option value="4">Add a ticket purchase to the Ticket table</option>
+                <option value="5">View all concerts for a given city</option>
+                <option value="6">View all concerts for a given artist</option>
+                <option value="7">View total spending per customer</option>
+                <option value="8">Find the top 3 artists by total ticket revenue</option>
+                <option value="9">Rewards Program</option>
+            </select>
+        </div>
+
+        <button type="submit" name="action" value="menu_choice">Submit Selected Option</button>
+    </form>
+
+    <form method="POST" action="/db_website" id="table-form">
+
+        <h2> <br> </h2>
+        <h2> Or display a full table:</h2>
+        <button type="submit" name="action" value="display_artists">Display Artist Table</button>
+        <button type="submit" name="action" value="display_concerts">Display Concert Table</button>
+        <button type="submit" name="action" value="display_customers">Display Customer Table</button>
+        <button type="submit" name="action" value="display_tickets">Display Ticket Table</button>
+    </form>
+    </div>
+</body>
+</html>
