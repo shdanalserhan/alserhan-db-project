@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ table_name }} Table</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f7;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background-color: #ffe7e7;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            margin-top: 20px;
+        }
+
+        th {
+            background-color: #9e1b32;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f7eeee;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: #9e1b32;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background-color: #7c1427;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>{{ table_name }} Table</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    {% for column in column_names %}
+                        <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {% for value in row %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="/db_website" class="back-button">Back to Main Page</a>
+    </div>
+</body>
+</html>
